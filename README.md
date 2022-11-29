@@ -14,3 +14,10 @@ python -m venv venv
 pip install -e .
 python -m unittest discover --verbose
 ```
+
+# Room for improvement:
+
+* Description of functionality and enhancing this readme of better running instrucitons.
+* Better unittests - finishing testing of all the methods concerning chain checking at the very least. 
+* Setting up some sort of automatic CI pipeline in order to run tests on push and analyze the code quality.
+* Possible refactoring of class SimpleBlockchain due to it's size - some methods may not necessary be there (hash_msg) 
