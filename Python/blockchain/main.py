@@ -7,7 +7,7 @@ import blockchain.structures as struct
 def main():
     my_blockchain = blockchain.simple_blockchain.SimpleBlockchain()
     transactions = my_blockchain.make_transactions_buffer()
-    my_blockchain.process_buffer(transactions)
+    my_blockchain.process_transactions_buffer(transactions)
     transactions = my_blockchain.make_transactions_buffer(5)
     incoming_chain = [my_blockchain.make_block(transactions)]
     my_blockchain.update_chain(incoming_chain)

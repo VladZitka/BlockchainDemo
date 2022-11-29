@@ -72,17 +72,12 @@ class SimpleBlockchain(object):
         Returns: 
             hashed message in string format.
         Raises:
-
+            If the data cannot be serialized using json.
         """
         if not isinstance(msg, str):
             msg = json.dumps(msg, sort_keys=True)
 
-        if sys.version_info.major == 2:
-            raise ValueError(
-                "Please get into the 21 century and don't use python 2"
-                )
-        else:
-            return hashlib.sha256(str(msg).encode("utf-8")).hexdigest()
+        return hashlib.sha256(str(msg).encode("utf-8")).hexdigest()
 
 
     def make_random_transaction(self, max_value: int = 3) -> dict[str: int]:
@@ -130,6 +125,7 @@ class SimpleBlockchain(object):
         # No transaction may cause an overdraft.
         for key in transaction.keys():
             acc_balance = self.state[key] if key in self.state.keys() else 0
+            acc_balance += transaction[key]
             if (acc_balance < 0):
                 return False
 
@@ -144,7 +140,7 @@ class SimpleBlockchain(object):
             transactions_buffer.append(self.make_random_transaction())
         return transactions_buffer
 
-    def process_buffer(
+    def process_transactions_buffer(
             self,
             transactions_buffer: list[dict[str, int]],
             max_block_size: int = 5
@@ -160,7 +156,7 @@ class SimpleBlockchain(object):
         while len(transactions_buffer) > 0:
             transactions_list: list[dict[str, int]] = []
             while (len(transactions_buffer) > 0) and\
-                (len(transactions_list) <= max_block_size):
+                (len(transactions_list) < max_block_size):
                 transaction = transactions_buffer.pop()
                 if self.is_valid_transaction(transaction):
                     transactions_list.append(transaction)
@@ -214,7 +210,11 @@ class SimpleBlockchain(object):
         parent_hash = parent.hash
         block_nr = block.blockContents.blockNumber
 
-        self.check_block_hash(block)
+        try:
+            self.check_block_hash(block)
+        except ValueError as err:
+            print("Incorrect hash!")
+            raise err
 
         if block_nr != (parent_nr + 1):
             raise ValueError(
@@ -231,6 +231,11 @@ class SimpleBlockchain(object):
             else:
                 raise ValueError(
                     f"Invalid transaction {transaction} in block {block_nr}")
+
+    def export_chain(self) -> str:
+        """Export the current chain in a json string."""
+        # This is rather hacky due to time constraints.
+        return json.dumps(self.chain.__repr__())
 
     def load_exported_chain(self, chain_str: str) -> list[my_struct.Block]:
         """Load a chain from an exported string.
@@ -249,11 +254,6 @@ class SimpleBlockchain(object):
             hash=blc["hash"],
             blockContents=my_struct.BlockContents(*blc["blockContents"])
             ) for blc in loaded]
-
-    def export_chain(self) -> str:
-        """Export the current chain in a json string."""
-        # This is rather hacky due to time constraints.
-        return json.dumps(self.chain.__repr__())
 
     def import_chain(
             self,
