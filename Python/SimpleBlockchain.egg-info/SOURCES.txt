@@ -7,3 +7,12 @@ blockchain/__init__.py
 blockchain/main.py
 blockchain/simple_blockchain.py
 blockchain/structures.py
+test/test_sblc_check_block_hash.py
+test/test_sblc_check_block_validity.py
+test/test_sblc_export_chain.py
+test/test_sblc_hash_msg.py
+test/test_sblc_is_valid_transaction.py
+test/test_sblc_make_random_transaction.py
+test/test_sblc_make_transactions_buffer.py
+test/test_sblc_process_transactions_buffer.py
+test/test_sblc_update_state.py

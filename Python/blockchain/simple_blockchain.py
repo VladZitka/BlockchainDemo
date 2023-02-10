@@ -32,7 +32,11 @@ class SimpleBlockchain(object):
         self.state_bcp = {}
 
     def _make_genesis_block(self) -> my_struct.Block:
-        """Create an initial state of the blockchain."""
+        """Create an initial state of the blockchain.
+
+        Returns:
+            The genesis block of the blockchain.
+        """
         gen_block_contents = my_struct.BlockContents(
             blockNumber=0,
             parentHash=None,
@@ -50,6 +54,8 @@ class SimpleBlockchain(object):
 
         Args:
             transactions: The list of transactions in the block.
+        Returns:
+            New block to be added to the chain.
         """
         parent_block: my_struct.Block = self.chain[-1]
         parent_hash = parent_block.hash
@@ -134,7 +140,13 @@ class SimpleBlockchain(object):
     def make_transactions_buffer(
             self,
             amount: int = 30) -> list[dict[str, int]]:
-        """Make a list of transactions."""
+        """Make a list of transactions.
+        
+        Args:
+            amount: The number of random transactions desired.
+        Returns:
+            List of random transactions.
+        """
         transactions_buffer: list[dict[str, int]] = []
         for i in range(amount):
             transactions_buffer.append(self.make_random_transaction())
@@ -148,8 +160,10 @@ class SimpleBlockchain(object):
         """Process the transaction buffer and extend the blockchain.
         
         Args:
-            transactions_buffer: list of transactions.
-            max_block_size: partitioning into blocks.
+            transactions_buffer: List of transactions.
+            max_block_size: Partitioning into blocks.
+        Returns:
+            Tuple with lists of accepted[0] and rejected[1] transactions.
         """
         accepted: int = 0
         rejects: int = 0
@@ -182,7 +196,7 @@ class SimpleBlockchain(object):
         Args:
             block: Block to be checked.
         Raises:
-            ValueError: if the value of the Hash is not appropriate.
+            ValueError: If the value of the Hash is not appropriate.
         """
         expected_hash = self.hash_msg(block.blockContents)
         if block.hash != expected_hash:
@@ -199,7 +213,7 @@ class SimpleBlockchain(object):
 
         Args:
             block: The block that should update the state.
-            parent: the last updated block.
+            parent: The last updated block.
         Raises:
             ValueError: If parent hash doesn't check out.
             ValueError: If blockNumber doesn't match the parent blockNumber.
@@ -233,8 +247,11 @@ class SimpleBlockchain(object):
                     f"Invalid transaction {transaction} in block {block_nr}")
 
     def export_chain(self) -> str:
-        """Export the current chain in a json string."""
-        # This is rather hacky due to time constraints.
+        """Export the current chain in a json string.
+        
+        Retruns:
+            Current chain in a string with json formatting.
+        """
         return json.dumps(self.chain.__repr__())
 
     def load_exported_chain(self, chain_str: str) -> list[my_struct.Block]:
@@ -305,7 +322,11 @@ class SimpleBlockchain(object):
     def update_chain(
             self,
             chain_extention: typing.Union[list[my_struct.Block], str]) -> None:
-        """Update current chain from received data."""
+        """Update current chain from received data.
+        
+        Args:
+            chain_extention: Either a list of blocks or a json string with data.
+        """
         if isinstance(chain_extention, str):
             try:
                 chain_extention = self.load_exported_chain(chain_extention)
